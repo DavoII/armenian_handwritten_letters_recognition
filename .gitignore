@@ -1,0 +1,8 @@
+.DS_Store
+
+*.zip
+/dataset
+/dataset_v2
+
+/Upper cleaned
+/Lower cleaned
