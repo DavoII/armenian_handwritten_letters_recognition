@@ -20,10 +20,7 @@ lower_case_class_idx = [
 
 data = []
 labels = []
-uppercase_data = []
-uppercase_labels = []
-lowercase_data = []
-lowercase_labels = []
+label_classes = []
 
 def getFIlePath(folderName, className):
     return './' + folderName +  '/' + className + '/*.png'
@@ -38,9 +35,10 @@ def load_data(args):
                     img = np.array(Image.open(fileName))
                     #median = []
                     #median = cv2.fastNlMeansDenoising(img)
-                    uppercase_data.append(img)
-                    uppercase_labels.append(index)
-        
+                    data.append(img)
+                    labels.append(index)
+            for num in upper_case_class_idx:
+                label_classes.append(num)
         if '-l' in args:
             folderName = 'Lower cleaned'
             for index, className in enumerate(lower_case_class_idx):
@@ -49,27 +47,23 @@ def load_data(args):
                     img = np.array(Image.open(fileName))
                     #median = []
                     #median = cv2.fastNlMeansDenoising(img)
-                    lowercase_data.append(img)
-                    lowercase_labels.append(index)
+                    data.append(img)
+                    labels.append(index)
+            for num in lower_case_class_idx:
+                label_classes.append(num)
 
 system_arg = sys.argv
 system_arg.pop(0)
 
 if not system_arg:
-    load_data(['-l', '-u'])
+    load_data(['-l', '-u'])    
 elif len(system_arg) == 1 and '-a'in system_arg:
     load_data(['-l', '-u', '-a'])
 else: 
     load_data(system_arg)
         
-uppercase_data = np.array(uppercase_data)
-lowercase_data = np.array(lowercase_data)
-uppercase_labels = np_utils.to_categorical(uppercase_labels, len(upper_case_class_idx))
-lowercase_labels = np_utils.to_categorical(lowercase_labels, len(lower_case_class_idx))
-        
-data = np.concatenate(uppercase_data, lowercase_data)
-labels = np.concatenate(uppercase_labels, lowercase_labels)
-
+labels = np_utils.to_categorical(labels, len(label_classes))
 
 np.save('./dataset_v2/data.npy', data)
 np.save('./dataset_v2/labels.npy', labels)
+np.save('./dataset_v2/label_classes.npy', label_classes)
