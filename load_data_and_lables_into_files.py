@@ -39,7 +39,7 @@ def get_agumented_data(img):
     img = np.reshape(img, (64, 64, 1))
     img = np.expand_dims(img, axis=0)
     aug_iter = gen.flow(img)
-    for i in range(8):
+    for i in range(4):
         aug_img = next(aug_iter)[0].astype(np.float32)
         aug_img = np.reshape(aug_img, (64, 64))
         result.append(aug_img)
@@ -85,7 +85,7 @@ system_arg = sys.argv
 system_arg.pop(0)
 
 if not system_arg:
-    load_data(['-l', '-u', '-a'])    
+    load_data(['-l', '-u'])    
 elif len(system_arg) == 1 and '-a'in system_arg:
     load_data(['-l', '-u', '-a'])
 else: 

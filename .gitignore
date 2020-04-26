@@ -1,8 +1,13 @@
 .DS_Store
 
 *.zip
+/aug_data
 /dataset
-/dataset_v2
+/dataset_*
+
+data.npy
+label_classes.npy
+labels.npy
 
 /Upper cleaned
 /Lower cleaned
