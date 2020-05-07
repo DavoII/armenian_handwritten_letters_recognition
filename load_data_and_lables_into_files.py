@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 import sys
 import glob
 #import cv2
@@ -46,14 +47,16 @@ def get_agumented_data(img):
     
     return result
 
-def append_img_to_data(index, fileName, args):
-    img = np.array(Image.open(fileName))
+def append_img_to_data(index, fileName, args, firstIndex = 0):
+    image = Image.open(fileName)
+    imgResized = image.resize((120, 120), Image.ANTIALIAS)
+    img = np.array(imgResized)
     if '-a' in args:
         data.append(img)
         labels.append(index)
         for single_img in get_agumented_data(img):
             data.append(single_img)
-            labels.append(labels[index])
+            labels.append(labels[firstIndex + index])
     else:
         #median = []
         #median = cv2.fastNlMeansDenoising(img)
@@ -62,7 +65,9 @@ def append_img_to_data(index, fileName, args):
 
 def load_data(args):
     print('loading data')
+    firstIndex = 0
     if '-u' in args:
+        firstIndex += 1
         folderName = 'Upper cleaned'
         for index, className in enumerate(upper_case_class_idx):
             for idx, fileName in enumerate(glob.glob(getFIlePath(folderName, className))):
@@ -76,7 +81,7 @@ def load_data(args):
         for index, className in enumerate(lower_case_class_idx):
             for idx, fileName in enumerate(glob.glob(getFIlePath(folderName, className))):
                 print(className, idx)
-                append_img_to_data(index, fileName, args)
+                append_img_to_data(index, fileName, args, firstIndex)
         for num in lower_case_class_idx:
             label_classes.append(num)
 
