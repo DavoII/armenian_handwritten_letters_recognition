@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import sys
 import glob
-#import cv2
+import cv2
 import numpy as np
 from PIL import Image
 from keras.utils import np_utils
@@ -32,34 +32,39 @@ data = []
 labels = []
 label_classes = []
 
+img_size = 64
+
 def getFIlePath(folderName, className):
     return './' + folderName +  '/' + className + '/*.png'
 
 def get_agumented_data(img):
+    
     result = []
-    img = np.reshape(img, (64, 64, 1))
+    img = np.reshape(img, (img_size, img_size, 1))
     img = np.expand_dims(img, axis=0)
     aug_iter = gen.flow(img)
-    for i in range(4):
+    for i in range(3):
         aug_img = next(aug_iter)[0].astype(np.float32)
-        aug_img = np.reshape(aug_img, (64, 64))
+        aug_img = np.reshape(aug_img, (img_size, img_size))
         result.append(aug_img)
     
     return result
 
 def append_img_to_data(index, fileName, args, firstIndex = 0):
     image = Image.open(fileName)
-    imgResized = image.resize((120, 120), Image.ANTIALIAS)
-    img = np.array(imgResized)
+    # imgResized = image.resize((img_size, img_size), Image.ANTIALIAS)
+    imgInit = np.array(image)
+    
+    img = []
+    img = cv2.fastNlMeansDenoising(imgInit)
+    index_x = firstIndex + index
     if '-a' in args:
         data.append(img)
-        labels.append(index)
+        labels.append(index_x)
         for single_img in get_agumented_data(img):
             data.append(single_img)
-            labels.append(labels[firstIndex + index])
+            labels.append(index_x)
     else:
-        #median = []
-        #median = cv2.fastNlMeansDenoising(img)
         data.append(img)
         labels.append(index)
 
@@ -68,7 +73,7 @@ def load_data(args):
     firstIndex = 0
     if '-u' in args:
         firstIndex += 1
-        folderName = 'Upper cleaned'
+        folderName = 'Upper cleaned/Upper cleaned'
         for index, className in enumerate(upper_case_class_idx):
             for idx, fileName in enumerate(glob.glob(getFIlePath(folderName, className))):
                 print(className, idx)
@@ -77,7 +82,7 @@ def load_data(args):
             label_classes.append(num)
     
     if '-l' in args:
-        folderName = 'Lower cleaned'
+        folderName = 'Lower cleaned/Lower cleaned'
         for index, className in enumerate(lower_case_class_idx):
             for idx, fileName in enumerate(glob.glob(getFIlePath(folderName, className))):
                 print(className, idx)
@@ -89,8 +94,9 @@ def load_data(args):
 system_arg = sys.argv
 system_arg.pop(0)
 
+
 if not system_arg:
-    load_data(['-l', '-u'])    
+    load_data(['-u', '-l'])    
 elif len(system_arg) == 1 and '-a'in system_arg:
     load_data(['-l', '-u', '-a'])
 else: 
