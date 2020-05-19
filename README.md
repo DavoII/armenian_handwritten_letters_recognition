@@ -3,7 +3,7 @@ This is a repo for Diploma, contains work for recognizing handwritten Armenian l
 
 run the following command for collecting data and labels in one file
 
-`pyhton load_data_and_lables_into_files.py`
+`pyhton load_data.py`
  
 use arguments like ```-a, -u, -l``` for`
 1. loading with augemented data `'-a'`
